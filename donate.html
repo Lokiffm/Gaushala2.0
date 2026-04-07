@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Donate — Shree Gau Dham Gaushala</title>
+  <meta name="description" content="Donate to Shree Gau Dham Gaushala. One-time, monthly, or adopt a cow. UPI, QR, Net Banking, Cash accepted. 80G tax exemption." />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ── DONATION PAGE STYLES ────────────────────────── */
+    .donate-hero {
+      position: relative;
+      min-height: 55vh;
+      display: flex;
+      align-items: flex-end;
+      padding-bottom: 5rem;
+      overflow: hidden;
+      background: linear-gradient(135deg, #1A0B04, #3B1E0A, #7A3010);
+    }
+    .donate-hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(5,2,0,0.7), rgba(10,5,0,0.3));
+    }
+    .donate-hero-circles {
+      position: absolute; inset: 0; overflow: hidden;
+    }
+    .dhc {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(232,201,118,0.1);
+    }
+    .dhc-1 { width: 600px; height: 600px; right: -100px; top: -100px; }
+    .dhc-2 { width: 400px; height: 400px; right: 50px; top: 50px; border-color: rgba(212,98,26,0.12); }
+    .dhc-3 { width: 200px; height: 200px; right: 150px; top: 150px; border-color: rgba(232,201,118,0.15); }
+
+    /* ── DONATE NAV TABS ─────────────────────────────── */
+    .donate-tabs {
+      background: var(--ivory);
+      border-bottom: 1px solid var(--parchment);
+      position: sticky;
+      top: 72px;
+      z-index: 100;
+    }
+    .donate-tab-list {
+      display: flex;
+      gap: 0;
+    }
+    .donate-tab-btn {
+      flex: 1;
+      padding: 1.2rem 1rem;
+      border: none;
+      background: transparent;
+      border-bottom: 3px solid transparent;
+      color: var(--text-soft);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+    .donate-tab-btn:hover { color: var(--saffron); }
+    .donate-tab-btn.active {
+      color: var(--saffron);
+      border-bottom-color: var(--saffron);
+      background: rgba(212,98,26,0.03);
+    }
+
+    /* ── DONATE SECTIONS ─────────────────────────────── */
+    .donate-section {
+      display: none;
+      padding: 5rem 0;
+    }
+    .donate-section.active { display: block; }
+
+    /* ── FORM CARD ───────────────────────────────────── */
+    .donate-layout {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 4rem;
+      align-items: start;
+    }
+    .donate-sidebar {
+      background: var(--earth);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      position: sticky;
+      top: 160px;
+    }
+    .donate-sidebar h3 {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--ivory);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Amount picker */
+    .amount-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.7rem;
+      margin-bottom: 1rem;
+    }
+    .amt-btn {
+      padding: 0.8rem 0.5rem;
+      border: 2px solid rgba(255,255,255,0.15);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.75);
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+    }
+    .amt-btn:hover { border-color: var(--gold-lt); color: var(--gold-lt); }
+    .amt-btn.active {
+      background: var(--saffron);
+      border-color: var(--saffron);
+      color: var(--white);
+    }
+    .custom-inp-wrap { position: relative; margin-bottom: 1.2rem; }
+    .custom-inp-wrap label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 0.4rem;
+    }
+    .rupee-prefix {
+      position: absolute; bottom: 0.85rem; left: 1rem;
+      color: rgba(255,255,255,0.5);
+      font-weight: 700; font-size: 1rem;
+    }
+    .custom-inp {
+      width: 100%;
+      padding: 0.85rem 1rem 0.85rem 2rem;
+      background: rgba(255,255,255,0.07);
+      border: 2px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 600;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .custom-inp:focus { border-color: var(--saffron); }
+    .custom-inp::placeholder { color: rgba(255,255,255,0.3); }
+
+    .donor-row { display: flex; gap: 0.7rem; margin-bottom: 0.7rem; }
+    .donor-inp {
+      flex: 1;
+      padding: 0.8rem 1rem;
+      background: rgba(255,255,255,0.07);
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .donor-inp:focus { border-color: var(--saffron); }
+    .donor-inp::placeholder { color: rgba(255,255,255,0.35); }
+    .donor-inp.full { width: 100%; }
+
+    .donate-type-row {
+      display: flex; gap: 0.8rem; margin-bottom: 1.2rem;
+    }
+    .type-pill {
+      flex: 1; padding: 0.65rem;
+      border: 2px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.6);
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+    }
+    .type-pill.active, .type-pill:hover {
+      background: rgba(212,98,26,0.2);
+      border-color: var(--saffron);
+      color: var(--saffron-lt);
+    }
+
+    .btn-donate-big {
+      width: 100%;
+      padding: 1.1rem;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, var(--saffron), var(--saffron-lt));
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 24px rgba(212,98,26,0.45);
+      transition: var(--transition);
+      margin-bottom: 0.8rem;
+    }
+    .btn-donate-big:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 36px rgba(212,98,26,0.6);
+    }
+    .secure-txt {
+      text-align: center;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.35);
+    }
+    .impact-preview {
+      margin-top: 1.5rem;
+      padding: 1.2rem;
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .impact-preview h5 {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold-lt);
+      margin-bottom: 0.7rem;
+    }
+    .impact-item {
+      display: flex; align-items: center; gap: 0.7rem;
+      font-size: 0.82rem; color: rgba(255,255,255,0.6);
+      padding: 0.4rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .impact-item:last-child { border: none; }
+    .impact-item.highlight { color: var(--gold-lt); }
+
+    /* ── PERK CARDS ──────────────────────────────────── */
+    .perk-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      margin-bottom: 2.5rem;
+    }
+    .perk-card {
+      padding: 1.5rem;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--parchment);
+      background: var(--ivory-dk);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .perk-card:hover, .perk-card.selected {
+      border-color: var(--saffron);
+      background: var(--white);
+      box-shadow: var(--shadow-sm);
+    }
+    .perk-card-top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 0.8rem;
+    }
+    .perk-icon { font-size: 2rem; }
+    .perk-price {
+      font-family: var(--font-display);
+      font-size: 1.3rem; font-weight: 700;
+      color: var(--saffron);
+    }
+    .perk-period { font-size: 0.7rem; color: var(--text-soft); }
+    .perk-card h4 {
+      font-family: var(--font-display);
+      font-size: 1rem; font-weight: 700;
+      color: var(--earth); margin-bottom: 0.4rem;
+    }
+    .perk-card p { font-size: 0.82rem; color: var(--text-soft); line-height: 1.6; }
+    .perk-includes {
+      display: flex; flex-direction: column; gap: 0.3rem;
+      margin-top: 0.8rem;
+    }
+    .perk-include-item {
+      font-size: 0.78rem; color: var(--forest);
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+
+    /* ── ADOPTION CARDS ──────────────────────────────── */
+    .adopt-cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+    .adopt-card {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 2px solid transparent;
+      transition: var(--transition);
+    }
+    .adopt-card:hover, .adopt-card.featured {
+      border-color: var(--saffron);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-4px);
+    }
+    .adopt-card-hero {
+      height: 140px;
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 4rem;
+    }
+    .ac-bg-1 { background: linear-gradient(135deg, #C9922A, #E8C976); }
+    .ac-bg-2 { background: linear-gradient(135deg, #D4621A, #F07D35); }
+    .ac-bg-3 { background: linear-gradient(135deg, #4A2510, #8B5E3C); }
+    .ac-bg-4 { background: linear-gradient(135deg, #2D5A3D, #4A8060); }
+    .adopt-card-featured-badge {
+      position: absolute; top: 1rem; right: 1rem;
+      background: var(--saffron);
+      color: var(--white);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.65rem;
+      border-radius: 50px;
+    }
+    .adopt-card-body { padding: 1.5rem; }
+    .adopt-card-price {
+      font-family: var(--font-display);
+      font-size: 1.8rem; font-weight: 900;
+      color: var(--saffron); line-height: 1;
+    }
+    .adopt-card-price span { font-size: 0.9rem; font-weight: 500; color: var(--text-soft); }
+    .adopt-card-body h3 {
+      font-family: var(--font-display);
+      font-size: 1.1rem; font-weight: 700;
+      color: var(--earth); margin: 0.6rem 0 0.4rem;
+    }
+    .adopt-card-body p { font-size: 0.85rem; color: var(--text-soft); margin-bottom: 1.2rem; line-height: 1.6; }
+    .adopt-perks { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1.2rem; }
+    .adopt-perk { font-size: 0.78rem; color: var(--forest); display: flex; align-items: center; gap: 0.4rem; }
+
+    /* ── PAYMENT OPTIONS ─────────────────────────────── */
+    .payment-section { background: var(--ivory-dk); }
+    .payment-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+    .payment-card {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      padding: 2rem;
+      box-shadow: var(--shadow-sm);
+      border-top: 4px solid var(--saffron);
+      transition: var(--transition);
+    }
+    .payment-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
+    .payment-card.gold-border { border-top-color: var(--gold); }
+    .payment-card.green-border { border-top-color: var(--forest); }
+    .payment-card.earth-border { border-top-color: var(--earth-lt); }
+    .payment-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.25rem; font-weight: 700;
+      color: var(--earth); margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    /* UPI */
+    .upi-id-box {
+      background: var(--ivory);
+      border: 2px dashed var(--saffron);
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .upi-id-val {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--saffron);
+      font-family: monospace;
+      letter-spacing: 0.05em;
+    }
+    .upi-apps {
+      display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1rem;
+    }
+    .upi-app-tag {
+      padding: 0.3rem 0.8rem;
+      background: var(--ivory-dk);
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-mid);
+    }
+    .copy-btn {
+      width: 100%;
+      padding: 0.65rem;
+      border: 2px solid var(--saffron);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--saffron);
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .copy-btn:hover { background: var(--saffron); color: var(--white); }
+    /* QR */
+    .qr-box {
+      width: 180px; height: 180px;
+      margin: 0 auto 1rem;
+      background: var(--ivory-dk);
+      border: 2px dashed var(--parchment);
+      border-radius: 12px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 0.5rem;
+      font-size: 0.8rem; color: var(--text-soft);
+      text-align: center; padding: 1rem;
+    }
+    .qr-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 10px);
+      gap: 3px;
+      margin-bottom: 0.5rem;
+    }
+    .qr-cell {
+      width: 10px; height: 10px;
+      border-radius: 2px;
+    }
+    /* Bank */
+    .bank-table { width: 100%; border-collapse: collapse; }
+    .bank-table tr td {
+      padding: 0.55rem 0;
+      font-size: 0.88rem;
+      border-bottom: 1px solid var(--ivory-dk);
+      color: var(--text-mid);
+      vertical-align: top;
+    }
+    .bank-table tr td:first-child {
+      color: var(--text-soft);
+      width: 40%;
+      padding-right: 0.5rem;
+    }
+    .bank-table tr:last-child td { border: none; }
+    /* Cash */
+    .cash-steps { display: flex; flex-direction: column; gap: 1rem; }
+    .cash-step { display: flex; gap: 1rem; align-items: flex-start; }
+    .cash-step-num {
+      width: 28px; height: 28px;
+      background: var(--saffron);
+      color: var(--white);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .cash-step-text h5 { font-size: 0.88rem; font-weight: 700; color: var(--earth); margin-bottom: 0.2rem; }
+    .cash-step-text p { font-size: 0.82rem; color: var(--text-soft); margin: 0; }
+
+    /* ── TAX / 80G INFO ──────────────────────────────── */
+    .tax-strip {
+      background: linear-gradient(135deg, var(--forest), var(--forest-lt));
+      padding: 3rem 0;
+      text-align: center;
+    }
+    .tax-strip h3 {
+      font-family: var(--font-display);
+      font-size: 1.5rem; font-weight: 700;
+      color: var(--white); margin-bottom: 0.7rem;
+    }
+    .tax-strip p { color: rgba(255,255,255,0.8); font-size: 0.95rem; }
+
+    /* ── RESPONSIVE ──────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .donate-layout { grid-template-columns: 1fr; }
+      .donate-sidebar { position: static; }
+      .perk-cards { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+      .donate-tab-btn { font-size: 0.75rem; padding: 1rem 0.5rem; }
+      .amount-grid { grid-template-columns: repeat(3, 1fr); }
+      .perk-cards { grid-template-columns: 1fr; }
+      .adopt-cards { grid-template-columns: 1fr; }
+      .payment-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVBAR ─────────────────────────────────────── -->
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">🐄</div>
+      <div class="nav-logo-text">
+        <span class="nav-logo-name">Shree Gau Dham</span>
+        <span class="nav-logo-sub">Gaushala</span>
+      </div>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="donate.html" class="active">Donate</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+      <li><a href="donate.html" class="nav-cta">🙏 Donate Now</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="nav-mobile-overlay" id="mobileOverlay"></div>
+
+<!-- ── HERO ───────────────────────────────────────── -->
+<section class="donate-hero">
+  <div class="donate-hero-circles">
+    <div class="dhc dhc-1"></div>
+    <div class="dhc dhc-2"></div>
+    <div class="dhc dhc-3"></div>
+  </div>
+  <div class="donate-hero-overlay"></div>
+  <div class="container" style="position:relative;z-index:2;">
+    <div class="page-hero-breadcrumb">
+      <a href="index.html">Home</a> <span>›</span> <span>Donate</span>
+    </div>
+    <span class="tag light">Gau Seva — Your Sacred Offering</span>
+    <h1 class="heading-xl light" style="margin-top:0.6rem;">Give with <em>Love</em>,<br/>Change a Life</h1>
+    <p class="body-lead light" style="max-width:520px; margin-top:1rem;">
+      Every rupee you donate directly feeds, shelters, and heals one of our 1,200+ sacred cows.
+      Choose how you'd like to give.
+    </p>
+    <div style="display:flex; gap:1rem; margin-top:2rem; flex-wrap:wrap;">
+      <div style="background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:1rem 1.5rem;text-align:center;">
+        <div style="font-family:var(--font-display);font-size:1.8rem;font-weight:900;color:var(--gold-lt);">₹500</div>
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.6);">Feeds 1 cow for a week</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:1rem 1.5rem;text-align:center;">
+        <div style="font-family:var(--font-display);font-size:1.8rem;font-weight:900;color:var(--gold-lt);">₹2,000</div>
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.6);">Covers one vet visit</div>
+      </div>
+      <div style="background:rgba(212,98,26,0.25);backdrop-filter:blur(10px);border:1px solid rgba(212,98,26,0.4);border-radius:12px;padding:1rem 1.5rem;text-align:center;">
+        <div style="font-family:var(--font-display);font-size:1.8rem;font-weight:900;color:var(--saffron-lt);">₹5,000</div>
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.6);">Sponsors 1 cow/month</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TAB NAVIGATION ─────────────────────────────── -->
+<div class="donate-tabs">
+  <div class="container">
+    <div class="donate-tab-list">
+      <button class="donate-tab-btn active" data-tab="one-time">💝 One-Time Donation</button>
+      <button class="donate-tab-btn" data-tab="monthly">📅 Monthly Giving</button>
+      <button class="donate-tab-btn" data-tab="adopt" id="adoptTab">🐄 Adopt a Cow</button>
+      <button class="donate-tab-btn" data-tab="payment">💳 Payment Options</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     ONE-TIME DONATION
+══════════════════════════════════════════════════ -->
+<section class="donate-section active" id="sec-one-time">
+  <div class="container">
+    <div class="donate-layout">
+      <div>
+        <span class="tag">One-Time Gift</span>
+        <h2 class="heading-lg" style="margin-top:0.5rem;">Make a <em>One-Time</em><br/>Donation</h2>
+        <p class="body-lead" style="margin-top:1rem; margin-bottom:2.5rem;">
+          A single donation of any amount goes directly to feed, shelter, and medical care for our sacred cows.
+          Your gift creates immediate, tangible impact.
+        </p>
+        <div class="perk-cards">
+          <div class="perk-card" onclick="setAmount(500)">
+            <div class="perk-card-top">
+              <span class="perk-icon">🌾</span>
+              <div>
+                <div class="perk-price">₹500</div>
+              </div>
+            </div>
+            <h4>Feed a Cow</h4>
+            <p>Provides nutritious fodder for one cow for an entire week — fresh greens, hay, and grain.</p>
+          </div>
+          <div class="perk-card" onclick="setAmount(2000)">
+            <div class="perk-card-top">
+              <span class="perk-icon">⚕️</span>
+              <div><div class="perk-price">₹2,000</div></div>
+            </div>
+            <h4>Vet Visit</h4>
+            <p>Covers one full veterinary consultation, medicines, and basic treatment for an ill cow.</p>
+          </div>
+          <div class="perk-card" onclick="setAmount(5000)">
+            <div class="perk-card-top">
+              <span class="perk-icon">🏠</span>
+              <div><div class="perk-price">₹5,000</div></div>
+            </div>
+            <h4>Monthly Shelter</h4>
+            <p>Covers the full monthly cost of shelter, feed, and care for one cow for an entire month.</p>
+          </div>
+          <div class="perk-card" onclick="setAmount(11000)">
+            <div class="perk-card-top">
+              <span class="perk-icon">🙏</span>
+              <div><div class="perk-price">₹11,000</div></div>
+            </div>
+            <h4>Shubh Donation</h4>
+            <p>An auspicious amount — supports multiple cows and earns the highest Gau Seva merit.</p>
+          </div>
+          <div class="perk-card" onclick="setAmount(25000)">
+            <div class="perk-card-top">
+              <span class="perk-icon">🏗</span>
+              <div><div class="perk-price">₹25,000</div></div>
+            </div>
+            <h4>Build Shelter</h4>
+            <p>Contributes to constructing one shelter unit that protects 8–10 cows from rain and sun.</p>
+          </div>
+          <div class="perk-card" onclick="setAmount(51000)">
+            <div class="perk-card-top">
+              <span class="perk-icon">👑</span>
+              <div><div class="perk-price">₹51,000+</div></div>
+            </div>
+            <h4>Patron Donor</h4>
+            <p>Join our circle of patron donors. Your name will be inscribed at the Gaushala's Donor Wall.</p>
+          </div>
+        </div>
+      </div>
+      <!-- SIDEBAR FORM -->
+      <div class="donate-sidebar reveal reveal-delay-2">
+        <h3>Your Donation</h3>
+        <div class="amount-grid">
+          <button class="amt-btn" onclick="setAmount(500)">₹500</button>
+          <button class="amt-btn" onclick="setAmount(1000)">₹1,000</button>
+          <button class="amt-btn active" onclick="setAmount(2000)">₹2,000</button>
+          <button class="amt-btn" onclick="setAmount(5000)">₹5,000</button>
+          <button class="amt-btn" onclick="setAmount(11000)">₹11,000</button>
+          <button class="amt-btn" onclick="setAmount(25000)">₹25,000</button>
+        </div>
+        <div class="custom-inp-wrap">
+          <label>Custom Amount</label>
+          <span class="rupee-prefix">₹</span>
+          <input type="number" class="custom-inp" id="customAmt" placeholder="Enter amount" min="1" />
+        </div>
+        <div class="donor-row">
+          <input type="text" class="donor-inp" placeholder="Full Name" />
+          <input type="email" class="donor-inp" placeholder="Email" />
+        </div>
+        <input type="tel" class="donor-inp full" placeholder="Phone Number" style="width:100%; margin-bottom:0.7rem;" />
+        <select class="donor-inp full" style="width:100%;margin-bottom:1.2rem;appearance:none;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);">
+          <option value="">Purpose (optional)</option>
+          <option>General Gau Seva</option>
+          <option>Feed a Cow</option>
+          <option>Veterinary Care</option>
+          <option>Shelter Construction</option>
+          <option>In Memory / Punya</option>
+        </select>
+        <button class="btn-donate-big" onclick="submitDonation()">🙏 Donate Now</button>
+        <p class="secure-txt">🔒 Secure · 80G Tax Receipt Included</p>
+        <div class="impact-preview">
+          <h5>Your ₹<span id="impactAmt">2,000</span> will</h5>
+          <div class="impact-item highlight" id="impactLine">Cover 1 full veterinary visit</div>
+          <div class="impact-item">Support 1,200+ cows daily</div>
+          <div class="impact-item">Earn you an 80G tax certificate</div>
+          <div class="impact-item">Send you a thank-you from Gau Mata 🐄</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     MONTHLY GIVING
+══════════════════════════════════════════════════ -->
+<section class="donate-section" id="sec-monthly">
+  <div class="container">
+    <div style="text-align:center; max-width:620px; margin:0 auto 3.5rem;">
+      <span class="tag">Recurring Seva</span>
+      <h2 class="heading-lg" style="margin-top:0.5rem;">Become a <em>Monthly Sevak</em></h2>
+      <p class="body-lead" style="margin-top:1rem;">
+        Monthly givers are the backbone of our gaushala. Your steady support lets us plan ahead — buying fodder in bulk, hiring vets, and never turning away a cow in need.
+      </p>
+    </div>
+    <div class="donate-layout">
+      <div>
+        <div class="perk-cards">
+          <div class="perk-card" onclick="setMonthly(500)">
+            <div class="perk-card-top">
+              <span class="perk-icon">🌱</span>
+              <div>
+                <div class="perk-price">₹500<span style="font-size:0.7rem;font-weight:400;color:var(--text-soft);">/mo</span></div>
+              </div>
+            </div>
+            <h4>Seed Donor</h4>
+            <p>Feeds one cow every week. Your small, regular gift creates large, ongoing impact.</p>
+            <div class="perk-includes">
+              <div class="perk-include-item">✅ Digital thank-you card</div>
+              <div class="perk-include-item">✅ Monthly newsletter</div>
+              <div class="perk-include-item">✅ Annual 80G receipt</div>
+            </div>
+          </div>
+          <div class="perk-card selected" onclick="setMonthly(2000)">
+            <div class="perk-card-top">
+              <span class="perk-icon">🌿</span>
+              <div>
+                <div class="perk-price">₹2,000<span style="font-size:0.7rem;font-weight:400;color:var(--text-soft);">/mo</span></div>
+              </div>
+            </div>
+            <h4>Sevak Donor</h4>
+            <p>Covers monthly vet care for one cow. Most popular — trusted by 300+ monthly donors.</p>
+            <div class="perk-includes">
+              <div class="perk-include-item">✅ Everything in Seed</div>
+              <div class="perk-include-item">✅ Cow update photos</div>
+              <div class="perk-include-item">✅ Gaushala visit invite</div>
+            </div>
+          </div>
+          <div class="perk-card" onclick="setMonthly(5000)">
+            <div class="perk-card-top">
+              <span class="perk-icon">🌳</span>
+              <div>
+                <div class="perk-price">₹5,000<span style="font-size:0.7rem;font-weight:400;color:var(--text-soft);">/mo</span></div>
+              </div>
+            </div>
+            <h4>Guardian Donor</h4>
+            <p>Full monthly sponsorship of one named cow — her entire food, shelter, and health needs.</p>
+            <div class="perk-includes">
+              <div class="perk-include-item">✅ Named cow assigned to you</div>
+              <div class="perk-include-item">✅ Monthly video update</div>
+              <div class="perk-include-item">✅ Cow's name certificate</div>
+            </div>
+          </div>
+          <div class="perk-card" onclick="setMonthly(10000)">
+            <div class="perk-card-top">
+              <span class="perk-icon">👑</span>
+              <div>
+                <div class="perk-price">₹10,000<span style="font-size:0.7rem;font-weight:400;color:var(--text-soft);">/mo</span></div>
+              </div>
+            </div>
+            <h4>Patron Sevak</h4>
+            <p>Supports 2 named cows completely. Join our most honoured circle of monthly patrons.</p>
+            <div class="perk-includes">
+              <div class="perk-include-item">✅ 2 named cows sponsored</div>
+              <div class="perk-include-item">✅ Donor Wall mention</div>
+              <div class="perk-include-item">✅ Priority visit &amp; events</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="donate-sidebar">
+        <h3>Monthly Commitment</h3>
+        <div class="amount-grid">
+          <button class="amt-btn" onclick="setMonthly(500)">₹500</button>
+          <button class="amt-btn" onclick="setMonthly(1000)">₹1,000</button>
+          <button class="amt-btn active" onclick="setMonthly(2000)">₹2,000</button>
+          <button class="amt-btn" onclick="setMonthly(5000)">₹5,000</button>
+          <button class="amt-btn" onclick="setMonthly(10000)">₹10,000</button>
+          <button class="amt-btn" onclick="setMonthly(0)">Custom</button>
+        </div>
+        <div class="custom-inp-wrap">
+          <label>Custom Monthly Amount</label>
+          <span class="rupee-prefix">₹</span>
+          <input type="number" class="custom-inp" placeholder="Per month" min="1" />
+        </div>
+        <div class="donor-row">
+          <input type="text" class="donor-inp" placeholder="Full Name" />
+          <input type="email" class="donor-inp" placeholder="Email" />
+        </div>
+        <input type="tel" class="donor-inp full" placeholder="Phone Number" style="width:100%;margin-bottom:1.2rem;"/>
+        <button class="btn-donate-big" onclick="submitDonation('monthly')">📅 Start Monthly Giving</button>
+        <p class="secure-txt">🔒 Cancel anytime · Auto-debit via UPI or card</p>
+        <div class="impact-preview">
+          <h5>Why monthly matters</h5>
+          <div class="impact-item highlight">🐄 Predictable income = better cow care</div>
+          <div class="impact-item">🌾 We buy fodder at better bulk rates</div>
+          <div class="impact-item">⚕️ Vets can be hired full-time</div>
+          <div class="impact-item">🏠 Long-term shelter planning possible</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     ADOPT A COW
+══════════════════════════════════════════════════ -->
+<section class="donate-section" id="sec-adopt">
+  <div class="container">
+    <div style="text-align:center; max-width:640px; margin:0 auto 3.5rem;">
+      <span class="tag">Cow Adoption Program</span>
+      <h2 class="heading-lg" style="margin-top:0.5rem;">Adopt &amp; <em>Name a Cow</em></h2>
+      <p class="body-lead" style="margin-top:1rem;">
+        You don't have to take them home. Sponsor a named cow and receive monthly photo updates, a certificate of adoption, and the profound spiritual merit of being a cow's lifelong protector.
+      </p>
+    </div>
+    <div class="adopt-cards reveal">
+      <div class="adopt-card">
+        <div class="adopt-card-hero ac-bg-1">🐮</div>
+        <div class="adopt-card-body">
+          <div class="adopt-card-price">₹1,500 <span>/month</span></div>
+          <h3>Adopt a Calf</h3>
+          <p>Sponsor a young calf from birth to adulthood. Watch them grow through monthly photos and updates.</p>
+          <div class="adopt-perks">
+            <div class="adopt-perk">✅ Named calf assigned to you</div>
+            <div class="adopt-perk">✅ Monthly photo update</div>
+            <div class="adopt-perk">✅ Digital adoption certificate</div>
+            <div class="adopt-perk">✅ Annual 80G tax receipt</div>
+          </div>
+          <a href="#" class="btn btn-ghost" onclick="openAdoptForm('Calf', 1500)">Adopt a Calf →</a>
+        </div>
+      </div>
+      <div class="adopt-card featured">
+        <div class="adopt-card-hero ac-bg-2">🐄
+          <span class="adopt-card-featured-badge">Most Popular</span>
+        </div>
+        <div class="adopt-card-body">
+          <div class="adopt-card-price">₹3,000 <span>/month</span></div>
+          <h3>Adopt a Cow</h3>
+          <p>Full sponsorship of an adult cow — her food, shelter, and medical care. You name her.</p>
+          <div class="adopt-perks">
+            <div class="adopt-perk">✅ Named adult cow assigned</div>
+            <div class="adopt-perk">✅ Monthly photo + video</div>
+            <div class="adopt-perk">✅ Printed adoption certificate</div>
+            <div class="adopt-perk">✅ Invite to annual seva day</div>
+          </div>
+          <a href="#" class="btn btn-saffron" onclick="openAdoptForm('Adult Cow', 3000)">Adopt a Cow →</a>
+        </div>
+      </div>
+      <div class="adopt-card">
+        <div class="adopt-card-hero ac-bg-3">🧓🐄</div>
+        <div class="adopt-card-body">
+          <div class="adopt-card-price">₹5,000 <span>/month</span></div>
+          <h3>Adopt an Elder Cow</h3>
+          <p>Give a dignified old age to an aged, infirm cow who has given her whole life in service.</p>
+          <div class="adopt-perks">
+            <div class="adopt-perk">✅ Named elder cow assigned</div>
+            <div class="adopt-perk">✅ Monthly health update</div>
+            <div class="adopt-perk">✅ Special puja in her name</div>
+            <div class="adopt-perk">✅ Donor Wall mention</div>
+          </div>
+          <a href="#" class="btn btn-earth" onclick="openAdoptForm('Elder Cow', 5000)">Adopt an Elder →</a>
+        </div>
+      </div>
+      <div class="adopt-card">
+        <div class="adopt-card-hero ac-bg-4">♿🐄</div>
+        <div class="adopt-card-body">
+          <div class="adopt-card-price">₹7,500 <span>/month</span></div>
+          <h3>Adopt a Disabled Cow</h3>
+          <p>Provide full special care — prosthetics, surgery, therapy — for a cow who needs extra love.</p>
+          <div class="adopt-perks">
+            <div class="adopt-perk">✅ Named disabled cow assigned</div>
+            <div class="adopt-perk">✅ Monthly recovery report</div>
+            <div class="adopt-perk">✅ Vet consultation updates</div>
+            <div class="adopt-perk">✅ Certificate of seva honour</div>
+          </div>
+          <a href="#" class="btn btn-gold" onclick="openAdoptForm('Disabled Cow', 7500)">Adopt &amp; Heal →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     PAYMENT OPTIONS
+══════════════════════════════════════════════════ -->
+<section class="donate-section payment-section" id="sec-payment">
+  <div class="container">
+    <div style="text-align:center; max-width:600px; margin:0 auto 1rem;">
+      <span class="tag">How to Give</span>
+      <h2 class="heading-lg" style="margin-top:0.5rem;">Multiple Ways to <em>Donate</em></h2>
+      <p class="body-lead" style="margin-top:1rem;">
+        Choose the method that works best for you. All payments are safe and come with a tax receipt.
+      </p>
+    </div>
+    <div class="payment-grid">
+      <!-- UPI -->
+      <div class="payment-card reveal">
+        <h3>📱 UPI Payment</h3>
+        <div class="upi-id-box">
+          <div style="font-size:0.75rem;color:var(--text-soft);margin-bottom:0.3rem;">UPI ID</div>
+          <div class="upi-id-val" id="upiIdText">gaushala@upi</div>
+        </div>
+        <div style="font-size:0.82rem;color:var(--text-soft);margin-bottom:0.7rem;">Accepted on:</div>
+        <div class="upi-apps">
+          <span class="upi-app-tag">📲 GPay</span>
+          <span class="upi-app-tag">💸 PhonePe</span>
+          <span class="upi-app-tag">🟡 Paytm</span>
+          <span class="upi-app-tag">📱 BHIM</span>
+          <span class="upi-app-tag">🏦 Any UPI</span>
+        </div>
+        <button class="copy-btn" onclick="copyUPI()">📋 Copy UPI ID</button>
+      </div>
+      <!-- QR Code -->
+      <div class="payment-card gold-border reveal reveal-delay-1">
+        <h3>⬛ QR Code</h3>
+        <div class="qr-box">
+          <div style="font-size:2rem;">⬛</div>
+          <div>Replace this with your actual QR Code image</div>
+          <div style="font-size:0.7rem;margin-top:0.4rem;">Add: &lt;img src="images/qr-code.png"&gt;</div>
+        </div>
+        <p style="font-size:0.85rem;color:var(--text-soft);text-align:center;">
+          Open any UPI app → Scan QR → Enter amount → Done!
+        </p>
+      </div>
+      <!-- Net Banking -->
+      <div class="payment-card green-border reveal">
+        <h3>🏦 Net Banking / NEFT / RTGS</h3>
+        <table class="bank-table">
+          <tr>
+            <td>Account Name</td>
+            <td><strong>Shree Gau Dham Gaushala</strong></td>
+          </tr>
+          <tr>
+            <td>Account No.</td>
+            <td><strong>XXXX XXXX XXXX</strong></td>
+          </tr>
+          <tr>
+            <td>IFSC Code</td>
+            <td><strong>SBIN0XXXXXX</strong></td>
+          </tr>
+          <tr>
+            <td>Bank</td>
+            <td><strong>State Bank of India</strong></td>
+          </tr>
+          <tr>
+            <td>Branch</td>
+            <td><strong>Your City Branch</strong></td>
+          </tr>
+          <tr>
+            <td>Account Type</td>
+            <td><strong>Savings / NGO</strong></td>
+          </tr>
+        </table>
+        <p style="font-size:0.78rem;color:var(--text-soft);margin-top:1rem;">
+          📧 Please email your transaction ID to <strong>donate@shreegaudham.org</strong> for a receipt.
+        </p>
+      </div>
+      <!-- Cash -->
+      <div class="payment-card earth-border reveal reveal-delay-1">
+        <h3>💵 Cash / Cheque / DD</h3>
+        <div class="cash-steps">
+          <div class="cash-step">
+            <div class="cash-step-num">1</div>
+            <div class="cash-step-text">
+              <h5>Visit Us</h5>
+              <p>Come to Shree Gau Dham Gaushala between 6AM–12PM or 4PM–7PM, any day of the year.</p>
+            </div>
+          </div>
+          <div class="cash-step">
+            <div class="cash-step-num">2</div>
+            <div class="cash-step-text">
+              <h5>Meet Our Treasurer</h5>
+              <p>Our on-site treasurer will issue an official receipt and 80G certificate immediately.</p>
+            </div>
+          </div>
+          <div class="cash-step">
+            <div class="cash-step-num">3</div>
+            <div class="cash-step-text">
+              <h5>Cheques / DD</h5>
+              <p>Make payable to: <strong>"Shree Gau Dham Gaushala"</strong>. Mail or hand-deliver to our address.</p>
+            </div>
+          </div>
+          <div class="cash-step">
+            <div class="cash-step-num">4</div>
+            <div class="cash-step-text">
+              <h5>Corporate / Large Donations</h5>
+              <p>Call +91 98765 43210 to arrange a special visit and formal MOU if needed.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TAX STRIP ──────────────────────────────────── -->
+<div class="tax-strip">
+  <div class="container">
+    <h3>🎁 80G Tax Exemption Available</h3>
+    <p>All donations are eligible for tax deduction under Section 80G of the Income Tax Act, 1961.<br/>
+    You will receive an official receipt and 80G certificate for every donation made.</p>
+    <p style="margin-top:0.8rem;font-size:0.82rem;opacity:0.7;">Registered NGO · Registration No. XXXXXX · PAN: XXXXX0000X</p>
+  </div>
+</div>
+
+<!-- ── FOOTER ─────────────────────────────────────── -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="nav-logo-icon">🐄</div>
+        <div style="margin-top:0.8rem;">
+          <div style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;color:var(--gold-lt);">Shree Gau Dham Gaushala</div>
+          <p>A sacred sanctuary for cows since 2006.</p>
+          <p class="reg">Reg. NGO | 80G Tax Exemption | Reg. No. XXXXXX</p>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Navigate</h5>
+        <ul>
+          <li><a href="index.html">🏠 Home</a></li>
+          <li><a href="gallery.html">🖼 Gallery</a></li>
+          <li><a href="donate.html">🙏 Donate</a></li>
+          <li><a href="index.html#contact">✉️ Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Donate</h5>
+        <ul>
+          <li><a href="#" onclick="switchTab('one-time')">💝 One-Time Gift</a></li>
+          <li><a href="#" onclick="switchTab('monthly')">📅 Monthly Giving</a></li>
+          <li><a href="#" onclick="switchTab('adopt')">🐄 Adopt a Cow</a></li>
+          <li><a href="#" onclick="switchTab('payment')">💳 Payment Options</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Contact</h5>
+        <ul>
+          <li><a href="tel:+919876543210">📞 +91 98765 43210</a></li>
+          <li><a href="mailto:donate@shreegaudham.org">✉️ donate@...</a></li>
+          <li><a href="#">📍 Gaushala Road, Your City</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 Shree Gau Dham Gaushala. All rights reserved. | Jay Gau Mata 🐄</p>
+      <p><a href="#">Privacy Policy</a> &nbsp;|&nbsp; <a href="#">Terms of Use</a></p>
+    </div>
+  </div>
+</footer>
+
+<!-- ── MODALS ──────────────────────────────────────── -->
+<div class="modal-overlay" id="donateModal">
+  <div class="modal-box">
+    <button class="modal-close-btn" id="closeDonateModal">✕</button>
+    <div class="modal-icon">🙏</div>
+    <h3>Jay Gau Mata!</h3>
+    <p>Thank you for your generous donation. You will receive a confirmation and 80G tax receipt at your email shortly.</p>
+    <p><strong>Your seva is deeply appreciated. 🐄</strong></p>
+    <button class="btn btn-saffron" onclick="document.getElementById('donateModal').classList.remove('open'); document.body.style.overflow='';" style="margin-top:1rem;width:100%;justify-content:center;">Close</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="adoptModal">
+  <div class="modal-box">
+    <button class="modal-close-btn" id="closeAdoptModal">✕</button>
+    <div class="modal-icon">🐄</div>
+    <h3>Adoption Enquiry Received!</h3>
+    <p id="adoptModalText">We will contact you within 24 hours to assign your named cow and share her story.</p>
+    <p><strong>A lifetime of blessings awaits you! 🙏</strong></p>
+    <button class="btn btn-saffron" onclick="document.getElementById('adoptModal').classList.remove('open'); document.body.style.overflow='';" style="margin-top:1rem;width:100%;justify-content:center;">Close</button>
+  </div>
+</div>
+
+<a href="#" class="float-donate" id="floatDonate" onclick="switchTab('one-time'); return false;">🙏 Donate Now</a>
+
+<script src="js/main.js"></script>
+<script>
+  // Tab switching
+  function switchTab(id) {
+    document.querySelectorAll('.donate-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.donate-section').forEach(s => s.classList.remove('active'));
+    document.querySelector(`[data-tab="${id}"]`).classList.add('active');
+    document.getElementById(`sec-${id}`).classList.add('active');
+    window.scrollTo({ top: document.querySelector('.donate-tabs').offsetTop - 80, behavior: 'smooth' });
+  }
+  document.querySelectorAll('.donate-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  });
+
+  // Check URL hash for adopt section
+  if (window.location.hash === '#adopt') switchTab('adopt');
+
+  // Amount picker
+  let currentAmt = 2000;
+  function setAmount(amt) {
+    currentAmt = amt || currentAmt;
+    document.querySelectorAll('.amt-btn').forEach(b => b.classList.remove('active'));
+    const impacts = {
+      500: 'Feed one cow for a week', 1000: 'Feed two cows for a week',
+      2000: 'Cover 1 full veterinary visit', 5000: 'Sponsor 1 cow for a month',
+      11000: 'Sponsor 2 cows + vet care', 25000: 'Build one shelter unit',
+      51000: 'Patron-level full support'
+    };
+    document.getElementById('impactAmt').textContent = (amt||currentAmt).toLocaleString('en-IN');
+    document.getElementById('impactLine').textContent = impacts[amt] || `Support multiple cows`;
+  }
+  function setMonthly(amt) { setAmount(amt); }
+
+  // Donation submit
+  function submitDonation(type) {
+    document.getElementById('donateModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  document.getElementById('closeDonateModal').onclick = () => {
+    document.getElementById('donateModal').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  // Adopt form
+  function openAdoptForm(type, price) {
+    document.getElementById('adoptModalText').textContent =
+      `We will contact you within 24 hours to assign your ${type} and share her story. Monthly commitment: ₹${price.toLocaleString('en-IN')}.`;
+    document.getElementById('adoptModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  document.getElementById('closeAdoptModal').onclick = () => {
+    document.getElementById('adoptModal').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  // Copy UPI
+  function copyUPI() {
+    const id = document.getElementById('upiIdText').textContent;
+    navigator.clipboard.writeText(id).then(() => {
+      showToast('UPI ID copied! 📋', 'success');
+    });
+  }
+
+  function showToast(msg, type) {
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.classList.add('show'), 10);
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3500);
+  }
+</script>
+</body>
+</html>

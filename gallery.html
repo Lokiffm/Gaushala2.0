@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gallery — Shree Gau Dham Gaushala</title>
+  <meta name="description" content="Photos and videos from Shree Gau Dham Gaushala — witness the peace, love, and seva at our sanctuary." />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ── GALLERY PAGE ──────────────────────────────────── */
+    .gallery-hero {
+      position: relative;
+      min-height: 55vh;
+      display: flex;
+      align-items: flex-end;
+      padding-bottom: 5rem;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--earth-dk), var(--earth), var(--rust));
+    }
+    .gallery-hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(10,5,0,0.65) 0%, rgba(10,5,0,0.3) 100%);
+    }
+    .gallery-hero-pattern {
+      position: absolute; inset: 0;
+      background-image: repeating-conic-gradient(rgba(232,201,118,0.04) 0deg, transparent 10deg);
+    }
+
+    /* ── FILTER TABS ─────────────────────────────────── */
+    .filter-bar {
+      padding: 3rem 0 0;
+      background: var(--ivory);
+      position: sticky;
+      top: 72px;
+      z-index: 100;
+      border-bottom: 1px solid var(--parchment);
+    }
+    .filter-tabs {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      padding-bottom: 1rem;
+    }
+    .filter-tab {
+      padding: 0.55rem 1.3rem;
+      border-radius: 50px;
+      border: 2px solid var(--parchment);
+      background: transparent;
+      color: var(--text-mid);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .filter-tab:hover { border-color: var(--saffron); color: var(--saffron); }
+    .filter-tab.active {
+      background: var(--saffron);
+      border-color: var(--saffron);
+      color: var(--white);
+    }
+
+    /* ── PHOTOS GRID ─────────────────────────────────── */
+    .gallery-section { padding: 4rem 0 var(--section-pad); background: var(--ivory); }
+    .section-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+
+    .photo-masonry {
+      columns: 3;
+      column-gap: 1.2rem;
+    }
+    .photo-item {
+      break-inside: avoid;
+      margin-bottom: 1.2rem;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      background: var(--parchment);
+    }
+    .photo-item-inner {
+      aspect-ratio: var(--ar, 1);
+      background-size: cover;
+      background-position: center;
+      transition: transform 0.6s ease;
+    }
+    .photo-item:hover .photo-item-inner { transform: scale(1.05); }
+    .photo-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(10,5,0,0.75) 0%, transparent 55%);
+      display: flex; flex-direction: column;
+      justify-content: flex-end;
+      padding: 1.2rem;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .photo-item:hover .photo-overlay { opacity: 1; }
+    .photo-label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--white);
+    }
+    .photo-cat-tag {
+      font-size: 0.7rem;
+      color: var(--gold-lt);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+    .photo-zoom {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      width: 36px; height: 36px;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(8px);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .photo-item:hover .photo-zoom { opacity: 1; }
+
+    /* Gradient placeholders — remove when adding real images */
+    .p1  { --ar: 1; background-image: linear-gradient(135deg, #8B5E3C, #C9922A); }
+    .p2  { --ar: 4/5; background-image: linear-gradient(135deg, #4A7C59, #6BA07A); }
+    .p3  { --ar: 16/9; background-image: linear-gradient(135deg, #6B3920, #D4621A); }
+    .p4  { --ar: 1; background-image: linear-gradient(135deg, #2D5A3D, #4A8060); }
+    .p5  { --ar: 4/3; background-image: linear-gradient(135deg, #C9922A, #E8C976); }
+    .p6  { --ar: 1; background-image: linear-gradient(135deg, #4A2510, #8B5E3C); }
+    .p7  { --ar: 4/5; background-image: linear-gradient(135deg, #A94910, #D4621A); }
+    .p8  { --ar: 1; background-image: linear-gradient(135deg, #3B2A1A, #6B4C2A); }
+    .p9  { --ar: 16/9; background-image: linear-gradient(135deg, #1E3A28, #2D5A3D); }
+    .p10 { --ar: 1; background-image: linear-gradient(135deg, #C9922A, #D4621A); }
+    .p11 { --ar: 4/3; background-image: linear-gradient(135deg, #5C3A1E, #C9922A); }
+    .p12 { --ar: 1; background-image: linear-gradient(135deg, #4A7C59, #C9922A); }
+
+    /* ── LIGHTBOX ────────────────────────────────────── */
+    .lightbox {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 8000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(12px);
+    }
+    .lightbox.open { display: flex; }
+    .lightbox-inner {
+      position: relative;
+      max-width: 90vw;
+      max-height: 88vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .lightbox-img {
+      max-width: 80vw;
+      max-height: 80vh;
+      border-radius: var(--radius-md);
+      box-shadow: 0 20px 80px rgba(0,0,0,0.8);
+      object-fit: contain;
+    }
+    .lightbox-placeholder {
+      width: 70vw;
+      max-width: 700px;
+      height: 60vh;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: rgba(255,255,255,0.5);
+    }
+    .lightbox-close {
+      position: fixed;
+      top: 1.5rem; right: 1.5rem;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--white);
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .lightbox-close:hover { background: var(--saffron); border-color: var(--saffron); }
+    .lightbox-caption {
+      position: fixed;
+      bottom: 2rem; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(10px);
+      color: var(--white);
+      padding: 0.7rem 1.5rem;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    .lightbox-nav {
+      position: fixed;
+      top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--white);
+      width: 50px; height: 50px;
+      border-radius: 50%;
+      font-size: 1.4rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .lightbox-nav:hover { background: var(--saffron); border-color: var(--saffron); }
+    .lightbox-prev { left: 1.5rem; }
+    .lightbox-next { right: 1.5rem; }
+
+    /* ── VIDEOS ──────────────────────────────────────── */
+    .videos-section {
+      padding: 5rem 0;
+      background: var(--earth);
+    }
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+    .video-card {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .video-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--saffron);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    }
+    .video-thumb {
+      aspect-ratio: 16/9;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .video-thumb-bg {
+      position: absolute; inset: 0;
+      background-size: cover;
+      background-position: center;
+    }
+    .v1 { background: linear-gradient(135deg, #4A2510, #8B5E3C); }
+    .v2 { background: linear-gradient(135deg, #2D5A3D, #4A8060); }
+    .v3 { background: linear-gradient(135deg, #C9922A, #E8C976); }
+    .v4 { background: linear-gradient(135deg, #6B3920, #D4621A); }
+    .v5 { background: linear-gradient(135deg, #1E3A28, #4A7C59); }
+    .v6 { background: linear-gradient(135deg, #3B2A1A, #C9922A); }
+    .video-play {
+      position: relative; z-index: 1;
+      width: 60px; height: 60px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(8px);
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      transition: var(--transition);
+    }
+    .video-card:hover .video-play {
+      background: var(--saffron);
+      border-color: var(--saffron);
+      transform: scale(1.1);
+    }
+    .video-duration {
+      position: absolute;
+      bottom: 0.7rem; right: 0.7rem;
+      background: rgba(0,0,0,0.7);
+      color: var(--white);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      z-index: 1;
+    }
+    .video-meta { padding: 1.2rem 1.3rem; }
+    .video-meta h4 {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--gold-lt);
+      margin-bottom: 0.3rem;
+    }
+    .video-meta p { font-size: 0.8rem; color: rgba(255,255,255,0.5); }
+
+    /* ── RESPONSIVE ──────────────────────────────────── */
+    @media (max-width: 900px) {
+      .photo-masonry { columns: 2; }
+      .video-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      .photo-masonry { columns: 1; }
+      .video-grid { grid-template-columns: 1fr; }
+      .filter-tabs { gap: 0.4rem; }
+      .lightbox-nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVBAR ─────────────────────────────────────── -->
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">🐄</div>
+      <div class="nav-logo-text">
+        <span class="nav-logo-name">Shree Gau Dham</span>
+        <span class="nav-logo-sub">Gaushala</span>
+      </div>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="gallery.html" class="active">Gallery</a></li>
+      <li><a href="donate.html">Donate</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+      <li><a href="donate.html" class="nav-cta">🙏 Donate Now</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="nav-mobile-overlay" id="mobileOverlay"></div>
+
+<!-- ── HERO ───────────────────────────────────────── -->
+<section class="gallery-hero">
+  <div class="gallery-hero-pattern"></div>
+  <div class="gallery-hero-overlay"></div>
+  <div class="container" style="position:relative;z-index:2;">
+    <div class="page-hero-breadcrumb">
+      <a href="index.html">Home</a> <span>›</span> <span>Gallery</span>
+    </div>
+    <span class="tag light">Witness Our World</span>
+    <h1 class="heading-xl light" style="margin-top:0.6rem;">Life at <em>Gau Dham</em></h1>
+    <p class="body-lead light" style="max-width:500px; margin-top:1rem;">
+      Every photo tells a story of rescue, healing, and hope. See the faces that your generosity saves.
+    </p>
+  </div>
+</section>
+
+<!-- ── FILTER BAR ─────────────────────────────────── -->
+<div class="filter-bar">
+  <div class="container">
+    <div class="filter-tabs">
+      <button class="filter-tab active" data-filter="all">All</button>
+      <button class="filter-tab" data-filter="rescued">🚨 Rescued</button>
+      <button class="filter-tab" data-filter="old">🧓 Old Cows</button>
+      <button class="filter-tab" data-filter="disabled">💚 Disabled</button>
+      <button class="filter-tab" data-filter="calves">🐮 Calves</button>
+      <button class="filter-tab" data-filter="seva">🙏 Seva Moments</button>
+      <button class="filter-tab" data-filter="farm">🌾 Farm & Fields</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── PHOTOS ─────────────────────────────────────── -->
+<section class="gallery-section">
+  <div class="container">
+    <div class="section-label-row">
+      <div>
+        <span class="tag">Our Photo Journal</span>
+        <h2 class="heading-lg" style="margin-top:0.4rem;">Sacred <em>Moments</em></h2>
+      </div>
+      <p style="color:var(--text-soft); font-size:0.88rem; max-width:260px; text-align:right;">
+        📸 Replace with your real gaushala photos by updating the <code>images/</code> folder
+      </p>
+    </div>
+
+    <div class="photo-masonry" id="photoGrid">
+      <!-- Col 1 -->
+      <div class="photo-item reveal" data-cat="rescued" data-caption="A rescued cow on her first day" onclick="openLightbox(this)">
+        <div class="photo-item-inner p1" style="--ar:1;"></div>
+        <div class="photo-overlay">
+          <span class="photo-cat-tag">Rescued</span>
+          <span class="photo-label">First day of safety</span>
+        </div>
+        <span class="photo-zoom">🔍</span>
+      </div>
+      <div class="photo-item reveal reveal-delay-1" data-cat="old" data-caption="Elder cow resting peacefully" onclick="openLightbox(this)">
+        <div class="photo-item-inner p2" style="--ar:4/5;"></div>
+        <div class="photo-overlay">
+          <span class="photo-cat-tag">Old Cows</span>
+          <span class="photo-label">Elder cow at rest</span>
+        </div>
+        <span class="photo-zoom">🔍</span>
+      </div>
+      <div class="photo-item reveal" data-cat="seva" data-caption="Morning feeding seva" onclick="openLightbox(this)">
+        <div class="photo-item-inner p3" style="--ar:16/9;"></div>
+        <div class="photo-overlay">
+          <span class="photo-cat-tag">Seva Moments</span>
+          <span class="photo-label">Morning feeding time</span>
+        </div>
+        <span class="photo-zoom">🔍</span>
+      </div>
+      <div class="photo-item reveal reveal-delay-1" data-cat="farm" data-caption="Green pastures at Gau Dham" onclick="openLightbox(this)">
+        <div class="photo-item-inner p8" style="--ar:1;"></div>
+        <div class="photo-overlay">
+          <span class="photo-cat-tag">Farm & Fields</span>
+          <span class="photo-label">Our green fields</span>
+        </div>
+        <span class="photo-zoom">🔍</span>
+      </div>
+
+      <!-- Col 2 -->
+      <div class="photo-item reveal reveal-delay-2" data-cat="calves" data-caption="Happy calves playing" onclick="openLightbox(this)">
+        <div class="photo-item-inner p4" style="--ar:1;"></div>
+        <div class="photo-overlay">
+          <span class="photo-cat-tag">Calves</span>
+          <span class="photo-label">Joyful calves playing</span>
+        </div>
+        <span class="photo-zoom">🔍</span>
+      </div>
+      <div class="photo-item reveal reveal-delay-3" data-cat="disabled" data-caption="Vet care for a disabled cow" onclick="openLightbox(this)">
+        <div class="photo-item-inner p5" style="--ar:4/3;"></div>
+        <div class="photo-overlay">
+          <span class="photo-cat-tag">Disabled Care</span>
+          <span class="photo-label">Vet team at work</span>
+        </div>
+        <span class="photo-zoom">🔍</span>
+      </div>
+      <div class="photo-item reveal reveal-delay-1" data-cat="rescued" data-caption="Abandoned cow rescued from highway" onclick="openLightbox(this)">
+        <div class="photo-item-inner p9" style="--ar:16/9;"></div>
+        <div class="photo-overlay">
+          <span class="photo-cat-tag">Rescued</span>
+          <span class="photo-label">Highway rescue mission</span>
+        </div>
+        <span class="photo-zoom">🔍</span>
+      </div>
+      <div class="photo-item reveal reveal-delay-2" data-cat="calves" data-caption="Newborn calf being cared for" onclick="openLightbox(this)">
+        <div class="photo-item-inner p11" style="--ar:4/3;"></div>
+        <div class="photo-overlay">
+          <span class="photo-cat-tag">Calves</span>
+          <span class="photo-label">Newborn first days</span>
+        </div>
+        <span class="photo-zoom">🔍</span>
+      </div>
+
+      <!-- Col 3 -->
+      <div class="photo-item reveal reveal-delay-2" data-cat="old" data-caption="Old bull enjoying the sun" onclick="openLightbox(this)">
+        <div class="photo-item-inner p6" style="--ar:1;"></div>
+        <div class="photo-overlay">
+          <span class="photo-cat-tag">Old Cows</span>
+          <span class="photo-label">Basking in the sunshine</span>
+        </div>
+        <span class="photo-zoom">🔍</span>
+      </div>
+      <div class="photo-item reveal reveal-delay-3" data-cat="seva" data-caption="Volunteer group at Gau Dham" onclick="openLightbox(this)">
+        <div class="photo-item-inner p7" style="--ar:4/5;"></div>
+        <div class="photo-overlay">
+          <span class="photo-cat-tag">Seva Moments</span>
+          <span class="photo-label">Volunteer seva day</span>
+        </div>
+        <span class="photo-zoom">🔍</span>
+      </div>
+      <div class="photo-item reveal" data-cat="farm" data-caption="Organic composting from cow dung" onclick="openLightbox(this)">
+        <div class="photo-item-inner p10" style="--ar:1;"></div>
+        <div class="photo-overlay">
+          <span class="photo-cat-tag">Farm & Fields</span>
+          <span class="photo-label">Organic farm initiative</span>
+        </div>
+        <span class="photo-zoom">🔍</span>
+      </div>
+      <div class="photo-item reveal reveal-delay-1" data-cat="disabled" data-caption="A disabled cow's transformation" onclick="openLightbox(this)">
+        <div class="photo-item-inner p12" style="--ar:1;"></div>
+        <div class="photo-overlay">
+          <span class="photo-cat-tag">Disabled Care</span>
+          <span class="photo-label">A beautiful recovery</span>
+        </div>
+        <span class="photo-zoom">🔍</span>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top:3rem;">
+      <button class="btn btn-ghost" id="loadMoreBtn">Load More Photos</button>
+    </div>
+  </div>
+</section>
+
+<!-- ── VIDEOS ─────────────────────────────────────── -->
+<section class="videos-section">
+  <div class="container">
+    <div style="text-align:center; max-width:600px; margin:0 auto;">
+      <span class="tag light">Our Stories in Motion</span>
+      <h2 class="heading-lg light" style="margin-top:0.5rem;">Watch &amp; <em>Be Moved</em></h2>
+      <p class="body-lead light" style="margin-top:0.8rem;">
+        See the rescues, the recoveries, the joy — stories that words alone cannot capture.
+      </p>
+    </div>
+    <div class="video-grid">
+      <div class="video-card reveal" onclick="openVideoModal('https://www.youtube.com/embed/REPLACE1')">
+        <div class="video-thumb">
+          <div class="video-thumb-bg v1"></div>
+          <div class="video-play">▶</div>
+          <span class="video-duration">4:32</span>
+        </div>
+        <div class="video-meta">
+          <h4>The Story of Lakshmi — Rescued from a Drain</h4>
+          <p>August 2024 · 8.4K views</p>
+        </div>
+      </div>
+      <div class="video-card reveal reveal-delay-1" onclick="openVideoModal('https://www.youtube.com/embed/REPLACE2')">
+        <div class="video-thumb">
+          <div class="video-thumb-bg v2"></div>
+          <div class="video-play">▶</div>
+          <span class="video-duration">6:10</span>
+        </div>
+        <div class="video-meta">
+          <h4>Inside Our Vet Unit — Healing 95 Disabled Cows</h4>
+          <p>July 2024 · 12.1K views</p>
+        </div>
+      </div>
+      <div class="video-card reveal reveal-delay-2" onclick="openVideoModal('https://www.youtube.com/embed/REPLACE3')">
+        <div class="video-thumb">
+          <div class="video-thumb-bg v3"></div>
+          <div class="video-play">▶</div>
+          <span class="video-duration">3:45</span>
+        </div>
+        <div class="video-meta">
+          <h4>A Day in the Life — Morning Seva at Gau Dham</h4>
+          <p>June 2024 · 6.8K views</p>
+        </div>
+      </div>
+      <div class="video-card reveal" onclick="openVideoModal('https://www.youtube.com/embed/REPLACE4')">
+        <div class="video-thumb">
+          <div class="video-thumb-bg v4"></div>
+          <div class="video-play">▶</div>
+          <span class="video-duration">8:22</span>
+        </div>
+        <div class="video-meta">
+          <h4>18 Years of Gau Seva — Our Journey</h4>
+          <p>May 2024 · 22K views</p>
+        </div>
+      </div>
+      <div class="video-card reveal reveal-delay-1" onclick="openVideoModal('https://www.youtube.com/embed/REPLACE5')">
+        <div class="video-thumb">
+          <div class="video-thumb-bg v5"></div>
+          <div class="video-play">▶</div>
+          <span class="video-duration">5:05</span>
+        </div>
+        <div class="video-meta">
+          <h4>Calf Born at Gaushala — First Steps</h4>
+          <p>April 2024 · 18.3K views</p>
+        </div>
+      </div>
+      <div class="video-card reveal reveal-delay-2" onclick="openVideoModal('https://www.youtube.com/embed/REPLACE6')">
+        <div class="video-thumb">
+          <div class="video-thumb-bg v6"></div>
+          <div class="video-play">▶</div>
+          <span class="video-duration">7:15</span>
+        </div>
+        <div class="video-meta">
+          <h4>Donor Visit — See Where Your Donation Goes</h4>
+          <p>March 2024 · 9.7K views</p>
+        </div>
+      </div>
+    </div>
+    <p style="text-align:center; margin-top:2.5rem; color:rgba(255,255,255,0.45); font-size:0.85rem;">
+      📹 Replace YouTube embed links with your actual video IDs in gallery.html
+    </p>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────── -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="nav-logo-icon">🐄</div>
+        <div style="margin-top:0.8rem;">
+          <div style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;color:var(--gold-lt);">Shree Gau Dham Gaushala</div>
+          <p>A sacred sanctuary for cows since 2006.</p>
+          <p class="reg">Reg. NGO | 80G Tax Exemption | Reg. No. XXXXXX</p>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Navigate</h5>
+        <ul>
+          <li><a href="index.html">🏠 Home</a></li>
+          <li><a href="gallery.html">🖼 Gallery</a></li>
+          <li><a href="donate.html">🙏 Donate</a></li>
+          <li><a href="index.html#contact">✉️ Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Gallery</h5>
+        <ul>
+          <li><a href="#">🐄 Rescued Cows</a></li>
+          <li><a href="#">🧓 Elder Cows</a></li>
+          <li><a href="#">💚 Disabled Care</a></li>
+          <li><a href="#">🎥 Videos</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Donate</h5>
+        <div style="margin-bottom:1rem;">
+          <a href="donate.html" class="btn btn-saffron btn-sm">Donate Now 🙏</a>
+        </div>
+        <ul>
+          <li><a href="donate.html#adopt">🐄 Adopt a Cow</a></li>
+          <li><a href="donate.html#monthly">📅 Monthly Giving</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 Shree Gau Dham Gaushala. All rights reserved. | Jay Gau Mata 🐄</p>
+      <p><a href="#">Privacy Policy</a> &nbsp;|&nbsp; <a href="#">Terms of Use</a></p>
+    </div>
+  </div>
+</footer>
+
+<!-- ── LIGHTBOX ────────────────────────────────────── -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose">✕</button>
+  <button class="lightbox-nav lightbox-prev" id="lbPrev">‹</button>
+  <div class="lightbox-inner">
+    <div class="lightbox-placeholder" id="lightboxImg" style="background:var(--earth-lt);">
+      [Image preview — add real photos to see them here]
+    </div>
+  </div>
+  <button class="lightbox-nav lightbox-next" id="lbNext">›</button>
+  <div class="lightbox-caption" id="lightboxCaption">Caption</div>
+</div>
+
+<!-- ── VIDEO MODAL ────────────────────────────────── -->
+<div class="modal-overlay" id="videoModal">
+  <div class="modal-box" style="max-width:680px; padding:0; overflow:hidden; background:#000; border-radius:var(--radius-md);">
+    <button class="modal-close-btn" id="videoClose" style="background:rgba(255,255,255,0.1); color:white; top:0.7rem; right:0.7rem;">✕</button>
+    <iframe id="videoFrame" width="100%" height="380" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="display:block;"></iframe>
+  </div>
+</div>
+
+<a href="donate.html" class="float-donate" id="floatDonate">🙏 Donate</a>
+
+<script src="js/main.js"></script>
+<script>
+  // Filter tabs
+  document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const filter = tab.dataset.filter;
+      document.querySelectorAll('.photo-item').forEach(item => {
+        const show = filter === 'all' || item.dataset.cat === filter;
+        item.style.display = show ? 'block' : 'none';
+      });
+    });
+  });
+
+  // Lightbox
+  const photos = Array.from(document.querySelectorAll('.photo-item'));
+  let currentIdx = 0;
+
+  function openLightbox(el) {
+    currentIdx = photos.indexOf(el);
+    updateLightbox();
+    document.getElementById('lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function updateLightbox() {
+    const el = photos[currentIdx];
+    document.getElementById('lightboxCaption').textContent = el.dataset.caption || '';
+    const inner = el.querySelector('.photo-item-inner');
+    const lb = document.getElementById('lightboxImg');
+    lb.style.background = window.getComputedStyle(inner).background;
+    lb.textContent = el.dataset.caption || '';
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('lightboxClose').onclick = closeLightbox;
+  document.getElementById('lightbox').onclick = e => { if (e.target === document.getElementById('lightbox')) closeLightbox(); };
+  document.getElementById('lbPrev').onclick = () => { currentIdx = (currentIdx - 1 + photos.length) % photos.length; updateLightbox(); };
+  document.getElementById('lbNext').onclick = () => { currentIdx = (currentIdx + 1) % photos.length; updateLightbox(); };
+  document.addEventListener('keydown', e => {
+    if (document.getElementById('lightbox').classList.contains('open')) {
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') { currentIdx = (currentIdx - 1 + photos.length) % photos.length; updateLightbox(); }
+      if (e.key === 'ArrowRight') { currentIdx = (currentIdx + 1) % photos.length; updateLightbox(); }
+    }
+  });
+
+  // Video modal
+  function openVideoModal(url) {
+    document.getElementById('videoFrame').src = url + '?autoplay=1';
+    document.getElementById('videoModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  document.getElementById('videoClose').onclick = () => {
+    document.getElementById('videoModal').classList.remove('open');
+    document.getElementById('videoFrame').src = '';
+    document.body.style.overflow = '';
+  };
+
+  // Load more (demo)
+  document.getElementById('loadMoreBtn').onclick = function() {
+    this.textContent = 'All photos loaded!';
+    this.disabled = true;
+    this.style.opacity = '0.5';
+  };
+</script>
+</body>
+</html>
